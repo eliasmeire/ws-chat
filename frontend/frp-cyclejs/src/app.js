@@ -26,7 +26,7 @@ export function App (sources) {
   const vtree$ = messages$
     .withLatestFrom(senderInputChanged$.map(e => e.target.value).startWith(""))
     .map(([messages, me]) =>
-      <div>
+      <div className="wrapper">
         { messages && messages.length > 0 &&
           <ul className="chat">
             {
