@@ -4,8 +4,7 @@ import { html } from 'snabbdom-jsx';
 export function App (sources) {
   const messageWebsocket$ = Observable.webSocket("ws://localhost:8081");
   const messages$ = messageWebsocket$
-    .scan((acc, m) => [...acc, m], [])
-    .share();
+    .scan((acc, m) => [...acc, m], []);
 
   const formSubmit$ = sources.DOM.select("#form").events("submit");
   const senderChanged$ = sources.DOM.select("#sender").events("input").map(e => e.target.value);

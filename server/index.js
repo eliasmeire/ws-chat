@@ -1,6 +1,5 @@
 const express = require('express');
 const http = require('http');
-const url = require('url');
 const WebSocket = require('uws');
 
 const app = express();
@@ -27,6 +26,6 @@ wss.on('connection', (ws) => {
   });
 });
 
-server.listen(8081, function() {
+server.listen(8081, () => {
   console.log(`Listening on http://localhost:${server.address().port}`);
 });
