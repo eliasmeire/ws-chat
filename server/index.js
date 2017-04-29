@@ -18,9 +18,10 @@ wss.broadcast = function broadcast(data) {
 };
 
 wss.on('connection', (ws) => {
-    ws.send(JSON.stringify({ s: "Server", m: "Welcome!"}));
+  const welcomeMessage = { sender: "Server", message: "Welcome to the chat!"}
+  ws.send(JSON.stringify(welcomeMessage));
   ws.on('message', (message) => {
-    console.log('received: ', message);
+    console.log(`received "${message.message}" from ${message.sender}`);
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(message);

@@ -2,47 +2,63 @@ import { Observable, Subject } from 'rxjs';
 import { html } from 'snabbdom-jsx';
 
 export function App (sources) {
-  const id = Math.round(Math.random() * 1000000000);
-  const message$ = Observable.webSocket("ws://localhost:8081").scan((acc, m) => [...acc, m], []);
-  const counterActions$ = Observable.merge(
-    sources.DOM.select("#button__inc").events("click").mapTo(10),
-    sources.DOM.select("#button__dec").events("click").mapTo(-10),
-  )
-    .scan((acc, el) => acc + el)
-    .startWith(0)
-  
-  sources.DOM.select("#button__send").events("click")
-    .debounceTime(200)
-    .flatMapTo(sources.DOM.select("#message").elements().map(els => els[0].value).take(1))
-    .subscribe(m => message$.next(JSON.stringify({m, s: id})));
+  const messageWebsocket$ = Observable.webSocket("ws://localhost:8081");
+  const messages$ = messageWebsocket$
+    .scan((acc, m) => [...acc, m], [])
+    .startWith([]);
 
-  const reset$ = sources.DOM.select("#button__reset").events("click").mapTo(0);
-  const start$ = Observable.of(0).merge(reset$);
-  const vtree$ = start$
-    .switchMapTo(
-      Observable.interval(1000)
-        .combineLatest(counterActions$)
-    )
-    .map(([count, countActions]) => count + countActions)
-    .combineLatest(message$.startWith([]))
-    .map(([count, messages]) =>
+  const formSubmit$ = sources.DOM.select("#form").events("submit");
+  const senderInputChanged$ = sources.DOM.select("#sender").events("input");
+  const messageInputChanged$ = sources.DOM.select("#message").events("input");
+  const formMessage$ = Observable.combineLatest(senderInputChanged$, messageInputChanged$)
+    .map(([senderEvent, messageEvent]) => ({
+      sender: senderEvent.target.value,
+      message: messageEvent.target.value
+    }));
+
+  const sendMessage$ = formSubmit$
+    .debounceTime(200)
+    .withLatestFrom(formMessage$)
+    .map(([event, message]) => message);
+  
+  sendMessage$.subscribe(message => messageWebsocket$.next(JSON.stringify(message)));
+
+  const vtree$ = messages$
+    .withLatestFrom(senderInputChanged$.map(e => e.target.value).startWith(""))
+    .map(([messages, me]) =>
       <div>
-        <div>{count}</div>
-        <button id="button__inc">Up 10</button>
-        <button id="button__dec">Down 10</button>
-        <button id="button__reset">Reset</button>
-        <input id="message" type="text" />
-        <button id="button__send">Send</button>
-        { messages && messages.map(m => 
-            <p>{m.s}: {m.m}</p>
-          )
+        { messages && messages.length > 0 &&
+          <ul className="chat">
+            {
+              messages.map(m => 
+                <li className={`chat__entry ${me === m.sender && "chat__entry--mine"}`}>
+                  <img
+                    className="chat__entry__avatar"
+                    src={`https://api.adorable.io/avatars/128/${m.sender}.png`}
+                    title={m.sender}
+                    alt={m.sender}
+                  />
+                  <span className="chat__entry__message">{m.message}</span>
+                </li>
+              )
+            }
+          </ul>
         }
+        <div className="form__container">
+          <form id="form" action="" onsubmit={e => e.preventDefault()}>
+            <div className="form__inputs">
+              <input className="form__input" id="sender" type="text" placeholder="Your name"/>
+              <input className="form__input" id="message" type="text" placeholder="Type a message..." />
+            </div>
+            <div className="form__submit">
+              <input className="button" type="submit" id="button__send" value="Send" />
+            </div>
+          </form>
+        </div>
       </div>
     );
 
-  const sinks = {
+  return {
     DOM: vtree$
   };
-
-  return sinks;
 }
