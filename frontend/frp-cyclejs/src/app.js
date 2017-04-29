@@ -5,45 +5,42 @@ export function App (sources) {
   const messageWebsocket$ = Observable.webSocket("ws://localhost:8081");
   const messages$ = messageWebsocket$
     .scan((acc, m) => [...acc, m], [])
-    .startWith([]);
+    .share();
 
   const formSubmit$ = sources.DOM.select("#form").events("submit");
-  const senderInputChanged$ = sources.DOM.select("#sender").events("input");
-  const messageInputChanged$ = sources.DOM.select("#message").events("input");
-  const formMessage$ = Observable.combineLatest(senderInputChanged$, messageInputChanged$)
-    .map(([senderEvent, messageEvent]) => ({
-      sender: senderEvent.target.value,
-      message: messageEvent.target.value
-    }));
+  const senderChanged$ = sources.DOM.select("#sender").events("input").map(e => e.target.value);
+  const messageChanged$ = sources.DOM.select("#message").events("input").map(e => e.target.value);
+  const formMessage$ = Observable.combineLatest(senderChanged$, messageChanged$)
+    .map(([sender, message]) => ({ sender, message }));
 
   const sendMessage$ = formSubmit$
     .debounceTime(200)
     .withLatestFrom(formMessage$)
     .map(([event, message]) => message);
   
-  sendMessage$.subscribe(message => messageWebsocket$.next(JSON.stringify(message)));
+  sendMessage$
+    .map(message => JSON.stringify(message))
+    .subscribe(message => messageWebsocket$.next(message));
 
-  const vtree$ = messages$
-    .withLatestFrom(senderInputChanged$.map(e => e.target.value).startWith(""))
+  const vtree$ = messages$.startWith([])
+    .withLatestFrom(senderChanged$.startWith(""))
     .map(([messages, me]) =>
       <div className="wrapper">
-        { messages && messages.length > 0 &&
-          <ul className="chat">
-            {
-              messages.map(m => 
-                <li className={`chat__entry ${me === m.sender && "chat__entry--mine"}`}>
-                  <img
-                    className="chat__entry__avatar"
-                    src={`https://api.adorable.io/avatars/128/${m.sender}.png`}
-                    title={m.sender}
-                    alt={m.sender}
-                  />
-                  <span className="chat__entry__message">{m.message}</span>
-                </li>
-              )
-            }
-          </ul>
-        }
+        <ul className="chat">
+          { messages &&
+            messages.map(m => 
+              <li className={`chat__entry ${me === m.sender && "chat__entry--mine"}`}>
+                <img
+                  className="chat__entry__avatar"
+                  src={`https://api.adorable.io/avatars/32/${m.sender}.svg`}
+                  title={m.sender}
+                  alt={m.sender}
+                />
+                <span className="chat__entry__message">{m.message}</span>
+              </li>
+            )
+          }
+        </ul>
         <div className="form__container">
           <form id="form" action="" onsubmit={e => e.preventDefault()}>
             <div className="form__inputs">
