@@ -2,7 +2,7 @@ import { Observable, Subject } from 'rxjs';
 import { html } from 'snabbdom-jsx';
 
 export function App ({ DOM }) {
-  const messageWebsocket$ = Observable.webSocket("ws://localhost:8081");
+  const messageWebsocket$ = Observable.webSocket("ws://localhost:8001");
   const messages$ = messageWebsocket$
     .scan((acc, m) => [...acc, m], []);
 
