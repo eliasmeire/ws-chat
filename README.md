@@ -13,7 +13,7 @@ Implemented using FRP (RxJS). CycleJS is used for DOM manipulation.
 
 Uses the Elm language for FRP and DOM manipulation. As this is both built into the language no other libraries are needed.
 
-### imperative-jquery
+### imperative
 
 Implemented in imperative programming style. JQuery is used for DOM manipulation.
 
