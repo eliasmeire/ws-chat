@@ -7,12 +7,15 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 wss.on('connection', (ws) => {
-  const welcomeMessage = {
-    sender: "Server",
-    message: "Welcome to the chat! Greetings from your host, a Node.js WebSocket server"
-  };
+  const welcomeMessages = [
+    "Welcome to the chat!",
+    "Greetings from your host, a Node.js WebSocket server"
+  ];
 
-  ws.send(JSON.stringify(welcomeMessage));
+  welcomeMessages.forEach(message => {
+    ws.send(JSON.stringify({ sender: "Server", message }));
+  });
+
   ws.on('message', (message) => {
     const parsed = JSON.parse(message);
     console.log(`received "${parsed.message}" from ${parsed.sender}`);
