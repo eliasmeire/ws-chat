@@ -15,10 +15,7 @@ export function App ({ DOM }) {
   const sendMessage$ = formSubmit$
     .debounceTime(200)
     .withLatestFrom(formMessage$)
-    .map(([event, message]) => message);
-  
-  sendMessage$
-    .map(message => JSON.stringify(message))
+    .map(([event, message]) => JSON.stringify(message))
     .subscribe(message => messageWebsocket$.next(message));
 
   const vtree$ = messages$.startWith([])
