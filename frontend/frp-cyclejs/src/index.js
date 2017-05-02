@@ -8,4 +8,4 @@ const drivers = {
   DOM: makeDOMDriver('#app')
 };
 
-run(main, drivers)
+run(main, drivers);

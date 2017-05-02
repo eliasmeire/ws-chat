@@ -1,4 +1,4 @@
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { html } from 'snabbdom-jsx';
 
 export function App ({ DOM }) {
@@ -7,9 +7,9 @@ export function App ({ DOM }) {
     .scan((acc, m) => [...acc, m], []);
 
   const formSubmit$ = DOM.select("#form").events("submit");
-  const senderChanged$ = DOM.select("#sender").events("input").map(e => e.target.value);
-  const messageChanged$ = DOM.select("#message").events("input").map(e => e.target.value);
-  const formMessage$ = Observable.combineLatest(senderChanged$, messageChanged$)
+  const senderInput$ = DOM.select("#sender").events("input").map(e => e.target.value);
+  const messageInput$ = DOM.select("#message").events("input").map(e => e.target.value);
+  const formMessage$ = Observable.combineLatest(senderInput$, messageInput$)
     .map(([sender, message]) => ({ sender, message }));
 
   const sendMessage$ = formSubmit$
@@ -22,7 +22,7 @@ export function App ({ DOM }) {
     .subscribe(message => messageWebsocket$.next(message));
 
   const vtree$ = messages$.startWith([])
-    .withLatestFrom(senderChanged$.startWith(""))
+    .withLatestFrom(senderInput$.startWith(""))
     .map(([messages, me]) =>
       <div className="wrapper">
         <ul className="chat">

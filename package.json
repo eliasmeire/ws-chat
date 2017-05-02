@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "npm-recursive-install --skip-root",
-    "start:frontend:frp-cyclejs": "cd frontend/frp-cyclejs; npm start",
-    "start:frontend:imperative": "cd frontend/imperative; npm start",
-    "start:server": "cd ./server; npm start",
-    "start:frp-cyclejs": "concurrently \"npm run start:server\" \"npm run start:frontend:frp-cyclejs\"",
-    "start:imperative": "concurrently \"npm run start:server\" \"npm run start:frontend:imperative\"",
+    "start:frontend:frp-cyclejs": "cd frontend/frp-cyclejs && npm start",
+    "start:frontend:imperative": "cd frontend/imperative && npm start",
+    "start:server": "cd ./server && npm start",
+    "start:frp-cyclejs": "concurrently --prefix \"[{name}]\" --names \"SERVER,CLIENT\" -c \"blue.bold,red.bold\" \"npm run start:server\" \"npm run start:frontend:frp-cyclejs\"",
+    "start:imperative": "concurrently --prefix \"[{name}]\" --names \"SERVER,CLIENT\" -c \"blue.bold,red.bold\" \"npm run start:server\" \"npm run start:frontend:imperative\"",
     "start": "npm run start:frp-cyclejs"
   },
   "repository": {
