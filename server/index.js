@@ -1,10 +1,13 @@
 const express = require('express');
 const http = require('http');
 const WebSocket = require('uws');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
+
+app.use(express.static(path.join(__dirname, 'build')));
 
 wss.on('connection', (ws) => {
   const welcomeMessages = [
@@ -18,7 +21,6 @@ wss.on('connection', (ws) => {
 
   ws.on('message', (message) => {
     const parsed = JSON.parse(message);
-    console.log(`received "${parsed.message}" from ${parsed.sender}`);
 
     wss.clients
       .forEach((client) => {
@@ -29,6 +31,4 @@ wss.on('connection', (ws) => {
   });
 });
 
-server.listen(8001, () => {
-  console.log(`Server is listening on http://localhost:${server.address().port}`);
-});
+server.listen(8001);
