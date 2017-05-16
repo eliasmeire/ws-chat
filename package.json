@@ -2,9 +2,8 @@
   "name": "ws-chat",
   "version": "1.0.0",
   "description": "Websocket chat",
-  "main": "index.js",
   "scripts": {
-    "postinstall": "npm-recursive-install --skip-root",
+    "postinstall": "./node_modules/.bin/npm-recursive-install --skip-root",
     "start:frontend:frp-cyclejs": "cd frontend/frp-cyclejs && npm start",
     "start:frontend:imperative": "cd frontend/imperative && npm start",
     "start:server": "cd ./server && npm start",
