@@ -2,13 +2,13 @@ import { Observable } from 'rxjs';
 import { html } from 'snabbdom-jsx';
 
 export function App ({ DOM }) {
-  const messageWebsocket$ = Observable.webSocket("ws://localhost:8001");
+  const messageWebsocket$ = Observable.webSocket('ws://localhost:8001');
   const messages$ = messageWebsocket$
     .scan((acc, m) => [...acc, m], []);
 
-  const formSubmit$ = DOM.select("#form").events("submit");
-  const senderInput$ = DOM.select("#sender").events("input").map(e => e.target.value);
-  const messageInput$ = DOM.select("#message").events("input").map(e => e.target.value);
+  const formSubmit$ = DOM.select('#form').events('submit');
+  const senderInput$ = DOM.select('#sender').events('input').map(e => e.target.value);
+  const messageInput$ = DOM.select('#message').events('input').map(e => e.target.value);
   const formMessage$ = Observable.combineLatest(senderInput$, messageInput$)
     .map(([sender, message]) => ({ sender, message }));
 
@@ -19,13 +19,13 @@ export function App ({ DOM }) {
     .subscribe(message => messageWebsocket$.next(message));
 
   const vtree$ = messages$.startWith([])
-    .withLatestFrom(senderInput$.startWith(""))
+    .withLatestFrom(senderInput$.startWith(''))
     .map(([messages, me]) =>
       <div className="wrapper">
         <ul className="chat">
           { messages &&
-            messages.map(m => 
-              <li className={`chat__entry ${me === m.sender && "chat__entry--mine"}`}>
+            messages.map(m =>
+              <li className={`chat__entry ${me === m.sender && 'chat__entry--mine'}`}>
                 <img
                   className="chat__entry__avatar"
                   src={`https://api.adorable.io/avatars/32/${m.sender}.svg`}
@@ -38,7 +38,7 @@ export function App ({ DOM }) {
           }
         </ul>
         <div className="form__container">
-          <form id="form" action="" onsubmit={e => e.preventDefault()}>
+          <form id="form" action="" onSubmit={e => e.preventDefault()}>
             <div className="form__inputs">
               <input className="form__input" id="sender" type="text" placeholder="Your name"/>
               <input className="form__input" id="message" type="text" placeholder="Type a message..." />

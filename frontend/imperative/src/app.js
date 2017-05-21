@@ -6,7 +6,7 @@ Handlebars.registerHelper('equal', function(val1, val2, options) {
   val1 === val2 ? options.fn(this) : options.inverse(this);
 });
 
-$(document).ready(() => { 
+$(document).ready(() => {
   const template = Handlebars.compile(`
     <div class="wrapper">
         <ul class="chat">
@@ -41,18 +41,18 @@ $(document).ready(() => {
         </div>
       </div>
   `);
-  const messageWebsocket = new WebSocket("ws://localhost:8001");
+  const messageWebsocket = new WebSocket('ws://localhost:8001');
   const messages = [];
-  let lastMessage = "";
+  let lastMessage = '';
 
-  const render = (messages = [], me = "", lastMessage = lastMessage) => {
+  const render = (messages = [], me = '', lastMessage = lastMessage) => {
     for (let i = 0; i < messages.length; i++) {
       const message = messages[i];
       message.isMine = message.sender === me;
     }
     const data = { messages, me, lastMessage };
     const htmlString = template(data);
-    $("#app").html(htmlString);
+    $('#app').html(htmlString);
   };
 
   render(); // initial render
@@ -60,9 +60,9 @@ $(document).ready(() => {
   onsubmit = (event) => {
     event.preventDefault();
     debounce(() => {
-      const message = $("#message").val();
-      const sender = $("#sender").val();
-      
+      const message = $('#message').val();
+      const sender = $('#sender').val();
+
       if (message.trim().length > 0 && sender.trim().length > 0) {
         const newMessage = { message, sender };
         lastMessage = message;
@@ -74,6 +74,6 @@ $(document).ready(() => {
   messageWebsocket.onmessage = (event) => {
     const message = JSON.parse(event.data);
     messages.push(message);
-    render(messages, $("#sender").val(), lastMessage);
+    render(messages, $('#sender').val(), lastMessage);
   };
 });
