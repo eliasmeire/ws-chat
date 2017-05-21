@@ -45,7 +45,7 @@ $(document).ready(() => {
   const messages = [];
   let lastMessage = '';
 
-  const render = (messages = [], me = '', lastMessage = lastMessage) => {
+  const render = (messages = [], me = '', lastMessage) => {
     for (let i = 0; i < messages.length; i++) {
       const message = messages[i];
       message.isMine = message.sender === me;
