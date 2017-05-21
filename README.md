@@ -1,7 +1,7 @@
 # ws-chat
 > Simple websockets chat application
 
-This repo contains 3 implementations of this application. Some are implemented using functional reactive programming and some using imperative programming. The goal is to compare these programming styles.
+This repo contains 2 implementations of this application. One is implemented using functional reactive programming and one using imperative programming. The goal is to compare these programming styles.
 
 ## Implementations
 

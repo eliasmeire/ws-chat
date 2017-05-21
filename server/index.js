@@ -11,12 +11,12 @@ app.use(express.static(path.join(__dirname, 'build')));
 
 wss.on('connection', (ws) => {
   const welcomeMessages = [
-    "Welcome to the chat!",
-    "Greetings from your host, a Node.js WebSocket server"
+    'Welcome to the chat!',
+    'Greetings from your host, a Node.js WebSocket server'
   ];
 
   welcomeMessages.forEach(message => {
-    ws.send(JSON.stringify({ sender: "Server", message }));
+    ws.send(JSON.stringify({ sender: 'Server', message }));
   });
 
   ws.on('message', (message) => {
