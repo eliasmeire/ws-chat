@@ -1,12 +1,18 @@
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
 import { html } from 'snabbdom-jsx';
+import 'rxjs/add/observable/dom/webSocket';
+import 'rxjs/add/observable/combineLatest';
+import 'rxjs/add/operator/do';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/scan';
+import 'rxjs/add/operator/withLatestFrom';
+import 'rxjs/add/operator/debounceTime';
+import 'rxjs/add/operator/startWith';
 
-export function App ({ DOM }) {
-  const messageWebsocket$ = Observable.webSocket('ws://localhost:8001');
-  const messages$ = messageWebsocket$
-    .scan((acc, m) => [...acc, m], []);
+export function App ({ DOM, ws }) {
+  const messages$ = ws.scan((acc, m) => [...acc, m], []);
 
-  const formSubmit$ = DOM.select('#form').events('submit');
+  const formSubmit$ = DOM.select('#form').events('submit').do(e => e.preventDefault());
   const senderInput$ = DOM.select('#sender').events('input').map(e => e.target.value);
   const messageInput$ = DOM.select('#message').events('input').map(e => e.target.value);
   const formMessage$ = Observable.combineLatest(senderInput$, messageInput$)
@@ -14,12 +20,10 @@ export function App ({ DOM }) {
 
   const sendMessage$ = formSubmit$
     .debounceTime(200)
-    .withLatestFrom(formMessage$)
-    .map(([event, message]) => JSON.stringify(message))
-    .subscribe(message => messageWebsocket$.next(message));
+    .withLatestFrom(formMessage$, (event, message) => JSON.stringify(message));
 
-  const vtree$ = messages$.startWith([])
-    .withLatestFrom(senderInput$.startWith(''))
+  const vtree$ = Observable
+    .combineLatest(messages$.startWith([]) ,senderInput$.startWith(''))
     .map(([messages, me]) =>
       <div className="wrapper">
         <ul className="chat">
@@ -38,7 +42,7 @@ export function App ({ DOM }) {
           }
         </ul>
         <div className="form__container">
-          <form id="form" action="" onSubmit={e => e.preventDefault()}>
+          <form id="form" action="">
             <div className="form__inputs">
               <input className="form__input" id="sender" type="text" placeholder="Your name"/>
               <input className="form__input" id="message" type="text" placeholder="Type a message..." />
@@ -51,7 +55,5 @@ export function App ({ DOM }) {
       </div>
     );
 
-  return {
-    DOM: vtree$
-  };
+  return { DOM: vtree$, ws: sendMessage$ };
 }

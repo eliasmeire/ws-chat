@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/main.css">
+  <title>Chat</title>
+</head>
+<body>
+  <div id="app">
+    <div class="wrapper">
+      <ul id="chat" class="chat">
+      </ul>
+      <div class="form__container">
+        <form id="form" onsubmit="onsubmit">
+          <div class="form__inputs">
+            <input class="form__input" id="sender" type="text" placeholder="Your name" />
+            <input class="form__input" id="message" type="text" placeholder="Type a message..." />
+          </div>
+          <div class="form__submit">
+            <input class="button" type="submit" id="button__send" value="Send" />
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script src="bundle.js"></script>
+</body>
+</html>
